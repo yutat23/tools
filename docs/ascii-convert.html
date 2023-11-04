@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASCII 変換ツール</title>
+  </head>
+  <body>
+    <h3>ASCII 変換ツール</h3>
+
+    <div>
+      <label for="convert">進数：</label>
+      <select data-defaults="true" id="convert">
+        <option value="ascii2">2進数</option>
+        <option value="ascii8">8進数</option>
+        <option value="ascii10">10進数</option>
+        <option value="ascii16" selected>16進数</option>
+        <option value="urlencode">URLエンコード(UTF-8)</option>
+        <option value="escape">エスケープ</option>
+      </select>
+    </div>
+    <div>
+      <label>分割文字</label>
+      <input type="text" id="splitc" value="-" maxlength="1" />
+    </div>
+    <div>
+      <div>
+        <label for="input">変換前</label>
+        <textarea id="input" rows="8" cols="200"></textarea>
+      </div>
+      <div class="ui-field-contain" data-defaults="true">
+        <label for="output">変換後</label>
+        <textarea id="output" rows="8" cols="200"></textarea>
+      </div>
+    </div>
+    <div>
+      <div>
+        <button onclick="convertRev()">ASCII→文字列変換</button>
+        <button onclick="convert()">文字列→ASCII変換</button>
+      </div>
+    </div>
+
+    <div class="cursor"></div>
+    <div class="follower"></div>
+    <script src="./js/main.js"></script>
+    <script src="./js/settings.js"></script>
+    <script>
+      var converter = {
+        ascii: {
+          encode: function (input, n) {
+            var output = [];
+            for (var i = 0; i < input.length; i++)
+              output.push(input.charCodeAt(i).toString(n));
+            return output.join(" ");
+          },
+          decode: function (input, n) {
+            var splitc = $("#splitc").val();
+            input = input.split(splitc);
+            var output = [];
+            for (var i = 0; i < input.length; i++)
+              output.push(String.fromCharCode(parseInt(input[i], n)));
+            return output.join("");
+          },
+        },
+        ascii2: {
+          encode: function (input) {
+            return converter.ascii.encode(input, 2);
+          },
+          decode: function (input, n) {
+            return converter.ascii.decode(input, 2);
+          },
+        },
+        ascii8: {
+          encode: function (input) {
+            return converter.ascii.encode(input, 8);
+          },
+          decode: function (input, n) {
+            return converter.ascii.decode(input, 8);
+          },
+        },
+        ascii10: {
+          encode: function (input) {
+            return converter.ascii.encode(input, 10);
+          },
+          decode: function (input, n) {
+            return converter.ascii.decode(input, 10);
+          },
+        },
+        ascii16: {
+          encode: function (input) {
+            return converter.ascii.encode(input, 16);
+          },
+          decode: function (input, n) {
+            return converter.ascii.decode(input, 16);
+          },
+        },
+        urlencode: {
+          encode: function (input) {
+            return encodeURIComponent(input);
+          },
+          decode: function (input) {
+            return decodeURIComponent(input);
+          },
+        },
+        escape: {
+          encode: function (input) {
+            return escape(input);
+          },
+          decode: function (input) {
+            return unescape(input);
+          },
+        },
+      };
+
+      function convert() {
+        $("#output").val(
+          converter[$("#convert").val()].encode($("#input").val())
+        );
+      }
+
+      function convertRev() {
+        try {
+          $("#output").val(
+            converter[$("#convert").val()].decode($("#input").val())
+          );
+        } catch (e) {
+          alert("デコードエラー:" + e);
+        }
+      }
+    </script>
+  </body>
+</html>
