@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ASCII 変換ツール</title>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <h3>ASCII 変換ツール</h3>
+
+  <body class="font-sans bg-gray-100 text-gray-700 p-10">
+    <h3 class="text-center text-blue-500">ASCII 変換ツール</h3>
 
     <div>
-      <label for="convert">進数：</label>
-      <select data-defaults="true" id="convert">
+      <label for="convert" class="block mb-2 text-lg">進数：</label>
+      <select
+        data-defaults="true"
+        id="convert"
+        class="w-full py-2 px-3 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+      >
         <option value="ascii2">2進数</option>
         <option value="ascii8">8進数</option>
         <option value="ascii10">10進数</option>
@@ -21,23 +27,49 @@
       </select>
     </div>
     <div>
-      <label>分割文字</label>
-      <input type="text" id="splitc" value="-" maxlength="1" />
+      <label class="block mb-2 text-lg">分割文字</label>
+      <input
+        type="text"
+        id="splitc"
+        value="-"
+        maxlength="1"
+        class="w-full py-2 px-3 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+      />
     </div>
     <div>
       <div>
         <label for="input">変換前</label>
-        <textarea id="input" rows="8" cols="200"></textarea>
+        <textarea
+          id="input"
+          rows="8"
+          cols="200"
+          class="w-full py-2 px-3 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        ></textarea>
       </div>
       <div class="ui-field-contain" data-defaults="true">
         <label for="output">変換後</label>
-        <textarea id="output" rows="8" cols="200"></textarea>
+        <textarea
+          id="output"
+          rows="8"
+          cols="200"
+          class="w-full py-2 px-3 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        ></textarea>
       </div>
     </div>
     <div>
       <div>
-        <button onclick="convertRev()">ASCII→文字列変換</button>
-        <button onclick="convert()">文字列→ASCII変換</button>
+        <button
+          onclick="convertRev()"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          ASCII→文字列変換
+        </button>
+        <button
+          onclick="convert()"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4"
+        >
+          文字列→ASCII変換
+        </button>
       </div>
     </div>
     <script>
