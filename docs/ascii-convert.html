@@ -78,7 +78,7 @@
           encode: function (input, n) {
             var output = [];
             for (var i = 0; i < input.length; i++)
-              output.push(input.charCodeAt(i).toString(n));
+              output.push(input.charCodeAt(i).toString(n).padStart( 2, '0'));
             var splitc = $("#splitc").val();
             return output.join(splitc);
           },
