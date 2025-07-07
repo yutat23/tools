@@ -95,6 +95,54 @@ class ImageEditor {
         this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
         this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
 
+        // タッチイベント対応
+        this.canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) {
+                const touch = e.touches[0];
+                this._lastTouch = touch;
+                this.handleMouseDown(this._convertTouchToMouseEvent(touch, e));
+
+                // 長押し右クリックメニュー用タイマー
+                this._longPressTimer = setTimeout(() => {
+                    // 長押し時に右クリックメニューを表示
+                    // 選択ツールかつ要素が選択されている場合のみ
+                    if (this.currentTool === 'select' && this.selectedElement) {
+                        // タッチ位置でメニュー表示（pageX/pageYを使用）
+                        this.showContextMenu({
+                            pageX: touch.pageX,
+                            pageY: touch.pageY
+                        });
+                    }
+                }, 700); // 700ms長押し
+            }
+            e.preventDefault();
+        }, { passive: false });
+        this.canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                const touch = e.touches[0];
+                this._lastTouch = touch;
+                this.handleMouseMove(this._convertTouchToMouseEvent(touch, e));
+            }
+            // 長押しキャンセル
+            if (this._longPressTimer) {
+                clearTimeout(this._longPressTimer);
+                this._longPressTimer = null;
+            }
+            e.preventDefault();
+        }, { passive: false });
+        this.canvas.addEventListener('touchend', (e) => {
+            // touchend時はtouchesが空なので、最後のtouch位置を使う
+            if (this._lastTouch) {
+                this.handleMouseUp(this._convertTouchToMouseEvent(this._lastTouch, e));
+            }
+            // 長押しキャンセル
+            if (this._longPressTimer) {
+                clearTimeout(this._longPressTimer);
+                this._longPressTimer = null;
+            }
+            e.preventDefault();
+        }, { passive: false });
+
         // 操作ボタン
         document.getElementById('undoBtn').addEventListener('click', () => this.undo());
         document.getElementById('clearBtn').addEventListener('click', () => this.clear());
@@ -1310,6 +1358,17 @@ class ImageEditor {
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+    }
+
+    // タッチイベント→マウスイベント変換ユーティリティ
+    _convertTouchToMouseEvent(touch, originalEvent) {
+        const rect = this.canvas.getBoundingClientRect();
+        return {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            preventDefault: () => { if (originalEvent) originalEvent.preventDefault(); },
+            // 必要なら他のプロパティも追加
+        };
     }
 }
 
