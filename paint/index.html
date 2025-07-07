@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画像編集ツール - Tools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#6B7280',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tool-button {
+            @apply px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors;
+            color: #374151;
+        }
+        .dark .tool-button {
+            color: #f3f4f6;
+        }
+        .tool-button.active {
+            @apply bg-primary text-white border-primary;
+        }
+        .tool-button svg {
+            color: #374151;
+        }
+        .dark .tool-button svg {
+            color: #f3f4f6;
+        }
+        .tool-button.active svg {
+            color: white;
+        }
+        .tool-button span {
+            color: #374151;
+        }
+        .dark .tool-button span {
+            color: #f3f4f6;
+        }
+        .tool-button.active span {
+            color: white;
+        }
+        .color-picker {
+            @apply w-6 h-6 rounded border border-gray-300 dark:border-gray-600 cursor-pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
+    <div class="container mx-auto px-4 py-2">
+        <!-- ヘッダー -->
+        <div class="mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                <div class="text-left">
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white">画像編集ツール</h1>
+                </div>
+                <div class="text-center">
+                    
+                </div>
+                <div class="text-right">
+                    <button id="darkModeToggle" class="px-3 py-2 bg-gray-600 dark:bg-gray-400 text-white dark:text-gray-800 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors duration-200">
+                        <i data-lucide="moon" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- メインコンテンツ -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- ツールバー -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 space-y-4 transition-colors duration-200">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">ツール</h2>
+                    
+                    <!-- 画像アップロード -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">画像をアップロード</label>
+                        <input type="file" id="imageInput" accept="image/*" class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-600">
+                    </div>
+
+                    <!-- ツール選択 -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">編集ツール</label>
+                        <div class="grid grid-cols-4 gap-1">
+                            <button id="selectTool" class="tool-button" data-tool="select">
+                                <div class="flex items-center justify-center">
+                                    <i data-lucide="mouse-pointer" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-xs mt-1">選択</span>
+                            </button>
+                            <button id="textTool" class="tool-button" data-tool="text">
+                                <div class="flex items-center justify-center">
+                                    <i data-lucide="type" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-xs mt-1">テキスト</span>
+                            </button>
+                            <button id="rectTool" class="tool-button" data-tool="rect">
+                                <div class="flex items-center justify-center">
+                                    <i data-lucide="square" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-xs mt-1">矩形</span>
+                            </button>
+                            <button id="circleTool" class="tool-button" data-tool="circle">
+                                <div class="flex items-center justify-center">
+                                    <i data-lucide="circle" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-xs mt-1">円</span>
+                            </button>
+                            <button id="lineTool" class="tool-button" data-tool="line">
+                                <div class="flex items-center justify-center">
+                                    <i data-lucide="minus" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-xs mt-1">線</span>
+                            </button>
+                            <button id="arrowTool" class="tool-button" data-tool="arrow">
+                                <div class="flex items-center justify-center">
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-xs mt-1">矢印</span>
+                            </button>
+                            <button id="penTool" class="tool-button" data-tool="pen">
+                                <div class="flex items-center justify-center">
+                                    <i data-lucide="pen-tool" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-xs mt-1">ペン</span>
+                            </button>
+                            <button id="cropTool" class="tool-button" data-tool="crop">
+                                <div class="flex items-center justify-center">
+                                    <i data-lucide="crop" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-xs mt-1">クロップ</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 色選択 -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">メイン色</label>
+                        <div class="flex space-x-2">
+                            <input type="color" id="colorPicker" value="#000000" class="color-picker">
+                            <div class="flex-1">
+                                <input type="text" id="colorInput" value="#ff0000" class="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第2色選択 -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">第2色（背景・縁取り）</label>
+                        <div class="flex space-x-2">
+                            <input type="color" id="secondaryColorPicker" value="#ffffff" class="color-picker">
+                            <div class="flex-1">
+                                <input type="text" id="secondaryColorInput" value="#ffffff" class="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 縁の太さ -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">縁の太さ・ペン太さ</label>
+                        <input type="range" id="strokeWidthSlider" min="0" max="20" value="2" class="w-full accent-primary">
+                        <div class="text-center text-sm text-gray-600 dark:text-gray-400">
+                            <span id="strokeWidthValue">2</span>px
+                        </div>
+                    </div>
+
+                    <!-- 矢印サイズ -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">矢印サイズ</label>
+                        <input type="range" id="arrowSizeSlider" min="5" max="30" value="10" class="w-full accent-primary">
+                        <div class="text-center text-sm text-gray-600 dark:text-gray-400">
+                            <span id="arrowSizeValue">10</span>px
+                        </div>
+                    </div>
+
+                    <!-- フォントサイズ -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">フォントサイズ</label>
+                        <input type="range" id="fontSizeSlider" min="12" max="72" value="24" class="w-full accent-primary">
+                        <div class="text-center text-sm text-gray-600 dark:text-gray-400">
+                            <span id="fontSizeValue">24</span>px
+                        </div>
+                    </div>
+
+                    <!-- 操作ボタン -->
+                    <div class="space-y-1">
+                        <button id="undoBtn" class="w-full tool-button">
+                            <div class="flex items-center justify-center space-x-2">
+                                <i data-lucide="undo" class="w-4 h-4"></i>
+                                <span>元に戻す</span>
+                            </div>
+                        </button>
+                        <button id="clearBtn" class="w-full tool-button">
+                            <div class="flex items-center justify-center space-x-2">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                <span>クリア</span>
+                            </div>
+                        </button>
+                        <button id="saveBtn" class="w-full bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors dark:bg-green-500 dark:hover:bg-green-600">
+                            <div class="flex items-center justify-center space-x-2">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>保存</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- キャンバスエリア -->
+            <div class="lg:col-span-3">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">編集エリア</h2>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            <span id="canvasSize">1200 x 700</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
+                        <canvas id="canvas" width="1200" height="700" class="max-w-full h-auto border border-gray-300 bg-white cursor-crosshair"></canvas>
+                    </div>
+                    
+                    <div class="mt-4 text-center text-sm text-gray-500">
+                        画像をアップロードして編集を開始してください
+                    </div>
+                    <div class="mt-2 text-center text-xs text-gray-400">
+                        <p>テキスト編集: ダブルクリックまたは右クリック | 要素削除: Deleteキーまたは右クリック </p>
+                        <p>サイズ変更: 右下の青いハンドルをドラッグ | 色・スタイル変更: カラーピッカーまたは右クリック→色を変更 | 縁取り・背景色: 第2色と縁の太さで設定</p>
+                        <p>画像貼り付け: Ctrl+V（クリップボード）またはドラッグ&ドロップ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- テキスト入力モーダル -->
+    <div id="textModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-semibold mb-4">テキストを入力</h3>
+            <textarea id="textInput" class="w-full h-24 p-3 border border-gray-300 rounded-lg resize-none" placeholder="テキストを入力してください"></textarea>
+            <div class="flex justify-end space-x-2 mt-4">
+                <button id="cancelTextBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800">キャンセル</button>
+                <button id="confirmTextBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600">追加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右クリックメニュー -->
+    <div id="contextMenu" class="fixed bg-white border border-gray-300 rounded-lg shadow-lg hidden z-50">
+        <div class="py-1">
+            <button id="editTextBtn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">テキストを編集</button>
+            <button id="changeColorBtn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">色を変更</button>
+            <button id="deleteElementBtn" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">削除</button>
+        </div>
+    </div>
+
+    <!-- 色変更モーダル -->
+    <div id="colorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-semibold mb-4">色とスタイルを変更</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">メイン色</label>
+                    <input type="color" id="modalColorPicker" class="w-full h-12 rounded-lg border border-gray-300">
+                    <input type="text" id="modalColorInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mt-2" placeholder="#000000">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">第2色（背景・縁取り）</label>
+                    <input type="color" id="modalSecondaryColorPicker" class="w-full h-12 rounded-lg border border-gray-300">
+                    <input type="text" id="modalSecondaryColorInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mt-2" placeholder="#ffffff">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">縁の太さ</label>
+                    <input type="range" id="modalStrokeWidthSlider" min="0" max="20" value="2" class="w-full">
+                    <div class="text-center text-sm text-gray-600">
+                        <span id="modalStrokeWidthValue">2</span>px
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">矢印サイズ</label>
+                    <input type="range" id="modalArrowSizeSlider" min="5" max="30" value="10" class="w-full">
+                    <div class="text-center text-sm text-gray-600">
+                        <span id="modalArrowSizeValue">10</span>px
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 mt-6">
+                <button id="cancelColorBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800">キャンセル</button>
+                <button id="confirmColorBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600">適用</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./image-editor.js"></script>
+</body>
+</html> 
